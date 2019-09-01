@@ -9,6 +9,7 @@
     drop_on_delete: true
 
   tasks:
+  - meta: end_play
   - include_tasks: ../common/credentials.yaml
 
   - name: read secret
@@ -42,8 +43,6 @@
 
   - set_fact:
       password: "{{ (secret_reg.resources | first).data.password | b64decode }}"
-
-  - meta: end_play
 
   - name: create user
     mysql_user:

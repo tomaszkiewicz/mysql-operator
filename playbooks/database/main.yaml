@@ -9,6 +9,7 @@
     drop_on_delete: false
 
   tasks:
+  - meta: end_play
   - include_tasks: ../common/credentials.yaml
 
   - name: create database
