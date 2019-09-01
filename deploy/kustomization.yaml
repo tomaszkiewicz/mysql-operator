@@ -1,5 +1,6 @@
 namespace: mysql-operator
 resources:
+- ns.yaml
 - operator.yaml
 - role.yaml
 - role_binding.yaml
