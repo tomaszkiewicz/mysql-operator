@@ -9,7 +9,29 @@
     drop_on_delete: false
 
   tasks:
-  - include_tasks: ../common/credentials.yaml
+  - name: get mysql cluster
+    k8s_facts:
+      api_version: mysql.operator.luktom.net/v1
+      kind: MysqlCluster
+      name: "{{ cluster_ref.name }}"
+    register: cluster_reg
+
+  - set_fact:
+      cluster: "{{ cluster_reg.resources | first }}"
+
+  - debug:
+      var: cluster
+
+  - name: get mysql cluster credentials
+    k8s_facts:
+      api_version: v1
+      kind: Secret
+      name: "{{ cluster.spec.secretRef.name }}"
+      namespace: "{{ cluster.spec.secretRef.namespace }}"
+    register: cluster_secret_reg
+
+  - set_fact:
+      cluster_secret: "{{ cluster_secret_reg.resources | first }}"
 
   - name: set status
     k8s_status:
