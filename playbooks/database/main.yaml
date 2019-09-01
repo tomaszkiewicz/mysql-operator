@@ -36,6 +36,7 @@
       namespace: "{{ meta.namespace }}"
       status:
         created: true
+        stage: "created"
     when: state == "present"
 
   - name: delete database

@@ -29,7 +29,6 @@ spec:
           volumeMounts:
           - mountPath: /tmp/ansible-operator/runner
             name: runner
-          args: [ "--verbose" ]
           env:
             - name: WATCH_NAMESPACE
               value: ""
@@ -41,9 +40,9 @@ spec:
               value: "mysql-operator"
           resources:
             requests:
-              memory: 256Mi
+              memory: 300Mi
             limits:
-              memory: 256Mi
+              memory: 300Mi
       volumes:
         - name: runner
           emptyDir: {}
