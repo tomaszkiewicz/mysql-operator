@@ -1,0 +1,9 @@
+namespace: mysql-operator
+resources:
+- operator.yaml
+- role.yaml
+- role_binding.yaml
+- service_account.yaml
+- crds/mysql_v1_mysqlcluster_crd.yaml
+- crds/mysql_v1_mysqldatabase_crd.yaml
+- crds/mysql_v1_mysqluser_crd.yaml
