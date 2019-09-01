@@ -11,33 +11,33 @@
   tasks:
   - include_tasks: ../common/credentials.yaml
 
-  - name: set status
-    k8s_status:
-      api_version: mysql.operator.luktom.net/v1
-      kind: MysqlDatabase
-      name: "{{ meta.name }}"
-      namespace: "{{ meta.namespace }}"
-      status:
-        stage: "creating"
+  - when: state == "present"
+    block:
+    - name: set status
+      k8s_status:
+        api_version: mysql.operator.luktom.net/v1
+        kind: MysqlDatabase
+        name: "{{ meta.name }}"
+        namespace: "{{ meta.namespace }}"
+        status:
+          stage: "creating"
 
-  - name: create database
-    mysql_db:
-      login_host: "{{ cluster.spec.host }}"
-      login_user: "{{ cluster.spec.username }}"
-      login_password: "{{ cluster_secret.data.password | b64decode }}"
-      name: "{{ meta.name }}"
-    when: state == "present"
+    - name: create database
+      mysql_db:
+        login_host: "{{ cluster.spec.host }}"
+        login_user: "{{ cluster.spec.username }}"
+        login_password: "{{ cluster_secret.data.password | b64decode }}"
+        name: "{{ meta.name }}"
 
-  - name: set status
-    k8s_status:
-      api_version: mysql.operator.luktom.net/v1
-      kind: MysqlDatabase
-      name: "{{ meta.name }}"
-      namespace: "{{ meta.namespace }}"
-      status:
-        created: true
-        stage: "created"
-    when: state == "present"
+    - name: set status
+      k8s_status:
+        api_version: mysql.operator.luktom.net/v1
+        kind: MysqlDatabase
+        name: "{{ meta.name }}"
+        namespace: "{{ meta.namespace }}"
+        status:
+          created: true
+          stage: "created"
 
   - name: delete database
     mysql_db:
