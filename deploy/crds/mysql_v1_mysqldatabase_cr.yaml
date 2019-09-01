@@ -1,0 +1,8 @@
+apiVersion: mysql.operator.luktom.net/v1
+kind: MysqlDatabase
+metadata:
+  name: example-mysqldatabase
+spec:
+  dropOnDelete: false
+  clusterRef:
+    name: example-mysqlcluster

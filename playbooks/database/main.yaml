@@ -1,0 +1,39 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Manage mysql database
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    state: present
+    drop_on_delete: false
+
+  tasks:
+  - include_tasks: ../common/credentials.yaml
+
+  - name: create database
+    mysql_db:
+      login_host: "{{ cluster.spec.host }}"
+      login_user: "{{ cluster.spec.username }}"
+      login_password: "{{ cluster_secret.data.password | b64decode }}"
+      name: "{{ meta.name }}"
+    when: state == "present"
+
+  - name: set status
+    k8s_status:
+      api_version: mysql.operator.luktom.net/v1
+      kind: MysqlDatabase
+      name: "{{ meta.name }}"
+      namespace: "{{ meta.namespace }}"
+      status:
+        created: true
+    when: state == "present"
+
+  - name: delete database
+    mysql_db:
+      login_host: "{{ cluster.spec.host }}"
+      login_user: "{{ cluster.spec.username }}"
+      login_password: "{{ cluster_secret.data.password | b64decode }}"
+      name: "{{ meta.name }}"
+      state: absent
+    when: state == "absent" and drop_on_delete

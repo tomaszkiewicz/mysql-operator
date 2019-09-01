@@ -1,0 +1,79 @@
+#!/usr/bin/env ansible-playbook
+---
+- name: Manage mysql user
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    state: present
+    drop_on_delete: true
+
+  tasks:
+  - include_tasks: ../common/credentials.yaml
+
+  - name: read secret
+    k8s_facts:
+      api_version: v1
+      kind: Secret
+      name: "mysql-user-{{ meta.name }}"
+      namespace: "{{ meta.namespace }}"
+    register: secret_reg
+
+  - debug:
+      var: secret_reg
+
+  - name: generate secret if required
+    when: secret_reg.resources is not defined
+    k8s:
+      force: false
+      definition:
+        apiVersion: v1
+        kind: Secret
+        metadata:
+          name: "mysql-user-{{ meta.name }}"
+          namespace: "{{ meta.namespace }}"
+        data:
+          password: "{{ lookup('password', '/dev/null chars=ascii_letters,digits') | b64encode }}"
+
+  - name: read secret
+    k8s_facts:
+      api_version: v1
+      kind: Secret
+      name: "mysql-user-{{ meta.name }}"
+      namespace: "{{ meta.namespace }}"
+    register: secret_reg
+
+  - set_fact:
+      password: "{{ (secret_reg.resources | first).data.password | b64decode }}"
+
+  - name: create user
+    mysql_user:
+      login_host: "{{ cluster.spec.host }}"
+      login_user: "{{ cluster.spec.username }}"
+      login_password: "{{ cluster_secret.data.password | b64decode }}"
+      name: "{{ meta.name }}"
+      update_password: "{{ update_password | default('on_create') }}"
+      password: "{{ password }}"
+      host: "{{ host | default('%') }}"
+      append_privs: "{{ append_privs | default('yes') }}"
+      priv:  "{{ privileges }}"
+
+  - name: set status
+    k8s_status:
+      api_version: mysql.operator.luktom.net/v1
+      kind: MysqlUser
+      name: "{{ meta.name }}"
+      namespace: "{{ meta.namespace }}"
+      status:
+        created: true
+    when: state == "present"
+
+  - name: delete user
+    mysql_user:
+      login_host: "{{ cluster.spec.host }}"
+      login_user: "{{ cluster.spec.username }}"
+      login_password: "{{ cluster_secret.data.password | b64decode }}"
+      name: "{{ meta.name }}"
+      host: "{{ host | default('%') }}"
+      state: absent
+    when: state == "absent" and drop_on_delete

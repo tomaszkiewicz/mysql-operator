@@ -1,0 +1,8 @@
+apiVersion: mysql.operator.luktom.net/v1
+kind: MysqlUser
+metadata:
+  name: example-mysqluser
+spec:
+  clusterRef:
+    name: hosting
+  privileges: ""

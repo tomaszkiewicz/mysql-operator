@@ -1,0 +1,10 @@
+apiVersion: mysql.operator.luktom.net/v1
+kind: MysqlCluster
+metadata:
+  name: example-mysqlcluster
+spec:
+  host: mysql.test.luktom.net
+  username: administrator
+  secretRef:
+    name: example-mysqlcluster
+    namespace: default

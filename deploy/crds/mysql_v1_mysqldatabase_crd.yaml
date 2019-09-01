@@ -1,0 +1,29 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: mysqldatabases.mysql.operator.luktom.net
+spec:
+  group: mysql.operator.luktom.net
+  names:
+    kind: MysqlDatabase
+    listKind: MysqlDatabaseList
+    plural: mysqldatabases
+    singular: mysqldatabase
+  scope: Namespaced
+  subresources:
+    status: {}
+  version: v1
+  versions:
+  - name: v1
+    served: true
+    storage: true
+  additionalPrinterColumns:
+  - JSONPath: .spec.clusterRef.name
+    name: cluster
+    type: string
+  - JSONPath: .spec.dropOnDelete
+    name: dropOnDelete
+    type: boolean
+  - JSONPath: .status.created
+    name: created
+    type: boolean

@@ -1,0 +1,18 @@
+---
+- version: v1
+  group: mysql.operator.luktom.net
+  kind: MysqlDatabase
+  playbook: /opt/ansible/playbooks/database/main.yaml
+  finalizer:
+    name: finalizer.mysql.operator.luktom.net
+    vars:
+      state: absent
+
+- version: v1
+  group: mysql.operator.luktom.net
+  kind: MysqlUser
+  playbook: /opt/ansible/playbooks/user/main.yaml
+  finalizer:
+    name: finalizer.mysql.operator.luktom.net
+    vars:
+      state: absent
