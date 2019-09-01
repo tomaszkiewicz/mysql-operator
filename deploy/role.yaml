@@ -57,7 +57,5 @@ rules:
   - mysql.operator.luktom.net
   resources:
   - '*'
-  - mysqlusers
-  - mysqlclusters
   verbs:
   - '*'
