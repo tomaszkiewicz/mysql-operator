@@ -7,5 +7,5 @@ subjects:
   name: mysql-operator
 roleRef:
   kind: ClusterRole
-  name: mysql-operator
+  name: cluster-admin
   apiGroup: rbac.authorization.k8s.io
