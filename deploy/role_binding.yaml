@@ -6,6 +6,6 @@ subjects:
 - kind: ServiceAccount
   name: mysql-operator
 roleRef:
-  kind: Role
+  kind: ClusterRole
   name: mysql-operator
   apiGroup: rbac.authorization.k8s.io
