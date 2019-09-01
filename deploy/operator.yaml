@@ -29,6 +29,7 @@ spec:
           volumeMounts:
           - mountPath: /tmp/ansible-operator/runner
             name: runner
+          args: [ "--verbose" ]
           env:
             - name: WATCH_NAMESPACE
               value: ""
