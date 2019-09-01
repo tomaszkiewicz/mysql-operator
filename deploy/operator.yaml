@@ -46,9 +46,9 @@ spec:
               value: "mysql-operator"
           resources:
             requests:
-              memory: 100Mi
+              memory: 256Mi
             limits:
-              memory: 100Mi
+              memory: 256Mi
       volumes:
         - name: runner
           emptyDir: {}
