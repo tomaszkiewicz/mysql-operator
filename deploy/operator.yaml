@@ -24,11 +24,17 @@ spec:
           - mountPath: /tmp/ansible-operator/runner
             name: runner
             readOnly: true
+          resources:
+            requests:
+              memory: 256Mi
+            limits:
+              memory: 256Mi
         - name: operator
           image: "luktom/mysql-operator"
           volumeMounts:
           - mountPath: /tmp/ansible-operator/runner
             name: runner
+          args: [ "--verbose" ]
           env:
             - name: WATCH_NAMESPACE
               value: ""
@@ -40,9 +46,9 @@ spec:
               value: "mysql-operator"
           resources:
             requests:
-              memory: 300Mi
+              memory: 100Mi
             limits:
-              memory: 300Mi
+              memory: 100Mi
       volumes:
         - name: runner
           emptyDir: {}
