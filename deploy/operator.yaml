@@ -24,6 +24,9 @@ spec:
           - mountPath: /tmp/ansible-operator/runner
             name: runner
             readOnly: true
+          env:
+          - name: ANSIBLE_VERBOSITY
+            value: "4"
           resources:
             requests:
               memory: 256Mi
@@ -44,6 +47,8 @@ spec:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
               value: "mysql-operator"
+            - name: ANSIBLE_VERBOSITY
+              value: "4"
           resources:
             requests:
               memory: 256Mi
