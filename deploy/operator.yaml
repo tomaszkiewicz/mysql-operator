@@ -39,6 +39,11 @@ spec:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
               value: "mysql-operator"
+          resources:
+            requests:
+              memory: 256Mi
+            limits:
+              memory: 256Mi
       volumes:
         - name: runner
           emptyDir: {}
