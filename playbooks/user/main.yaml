@@ -19,9 +19,6 @@
       namespace: "{{ meta.namespace }}"
     register: secret_reg
 
-  - debug:
-      var: secret_reg
-
   - name: generate secret if required
     when: secret_reg.resources is not defined
     k8s:
@@ -45,6 +42,8 @@
 
   - set_fact:
       password: "{{ (secret_reg.resources | first).data.password | b64decode }}"
+
+  - meta: end_play
 
   - name: create user
     mysql_user:
