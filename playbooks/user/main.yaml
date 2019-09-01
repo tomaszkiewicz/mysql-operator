@@ -9,8 +9,16 @@
     drop_on_delete: true
 
   tasks:
-  - meta: end_play
   - include_tasks: ../common/credentials.yaml
+
+  - name: set status
+    k8s_status:
+      api_version: mysql.operator.luktom.net/v1
+      kind: MysqlUser
+      name: "{{ meta.name }}"
+      namespace: "{{ meta.namespace }}"
+      status:
+        stage: "creating secret"
 
   - name: read secret
     k8s_facts:
@@ -43,6 +51,15 @@
 
   - set_fact:
       password: "{{ (secret_reg.resources | first).data.password | b64decode }}"
+
+  - name: set status
+    k8s_status:
+      api_version: mysql.operator.luktom.net/v1
+      kind: MysqlUser
+      name: "{{ meta.name }}"
+      namespace: "{{ meta.namespace }}"
+      status:
+        stage: "creating user"
 
   - name: create user
     mysql_user:

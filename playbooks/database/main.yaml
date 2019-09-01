@@ -9,8 +9,16 @@
     drop_on_delete: false
 
   tasks:
-  - meta: end_play
   - include_tasks: ../common/credentials.yaml
+
+  - name: set status
+    k8s_status:
+      api_version: mysql.operator.luktom.net/v1
+      kind: MysqlDatabase
+      name: "{{ meta.name }}"
+      namespace: "{{ meta.namespace }}"
+      status:
+        stage: "creating"
 
   - name: create database
     mysql_db:
