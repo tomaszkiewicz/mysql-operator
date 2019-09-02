@@ -66,4 +66,4 @@
         login_password: "{{ cluster_secret.data.password | b64decode }}"
         name: "{{ meta.name }}"
         state: absent
-      when: drop_on_delete
+      when: drop_on_delete | bool
