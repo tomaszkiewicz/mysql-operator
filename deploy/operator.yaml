@@ -30,9 +30,9 @@ spec:
           #   value: "4"
           resources:
             requests:
-              memory: 512Mi
+              memory: 100Mi
             limits:
-              memory: 512Mi
+              memory: 100Mi
         - name: operator
           image: "luktom/mysql-operator"
           volumeMounts:
@@ -52,9 +52,9 @@ spec:
             #   value: "4"
           resources:
             requests:
-              memory: 512Mi
+              memory: 350Mi
             limits:
-              memory: 512Mi
+              memory: 350Mi
       volumes:
         - name: runner
           emptyDir: {}
