@@ -9,6 +9,15 @@
     drop_on_delete: true
 
   tasks:
+  - name: set status
+    k8s_status:
+      api_version: mysql.operator.luktom.net/v1
+      kind: MysqlUser
+      name: "{{ meta.name }}"
+      namespace: "{{ meta.namespace }}"
+      status:
+        stage: "checking cluster"
+
   - include_tasks: ../common/credentials.yaml
 
   - name: set status
