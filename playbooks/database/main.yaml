@@ -48,11 +48,22 @@
           created: true
           stage: "created"
 
-  - name: delete database
-    mysql_db:
-      login_host: "{{ cluster.spec.host }}"
-      login_user: "{{ cluster.spec.username }}"
-      login_password: "{{ cluster_secret.data.password | b64decode }}"
-      name: "{{ meta.name }}"
-      state: absent
-    when: state == "absent" and drop_on_delete
+  - when: state == "absent"
+    block:
+    - name: set status
+      k8s_status:
+        api_version: mysql.operator.luktom.net/v1
+        kind: MysqlDatabase
+        name: "{{ meta.name }}"
+        namespace: "{{ meta.namespace }}"
+        status:
+          stage: "deleting"
+
+    - name: delete database
+      mysql_db:
+        login_host: "{{ cluster.spec.host }}"
+        login_user: "{{ cluster.spec.username }}"
+        login_password: "{{ cluster_secret.data.password | b64decode }}"
+        name: "{{ meta.name }}"
+        state: absent
+      when: drop_on_delete

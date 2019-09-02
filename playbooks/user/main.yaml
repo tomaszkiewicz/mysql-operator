@@ -6,7 +6,6 @@
 
   vars:
     state: present
-    drop_on_delete: true
 
   tasks:
   - name: set status
@@ -20,85 +19,96 @@
 
   - include_tasks: ../common/credentials.yaml
 
-  - name: set status
-    k8s_status:
-      api_version: mysql.operator.luktom.net/v1
-      kind: MysqlUser
-      name: "{{ meta.name }}"
-      namespace: "{{ meta.namespace }}"
-      status:
-        stage: "creating secret"
+  - when: state == "present"
+    block:
+    - name: set status
+      k8s_status:
+        api_version: mysql.operator.luktom.net/v1
+        kind: MysqlUser
+        name: "{{ meta.name }}"
+        namespace: "{{ meta.namespace }}"
+        status:
+          stage: "creating secret"
 
-  - name: read secret
-    k8s_facts:
-      api_version: v1
-      kind: Secret
-      name: "mysql-user-{{ meta.name }}"
-      namespace: "{{ meta.namespace }}"
-    register: secret_reg
-
-  - name: generate secret if required
-    when: (secret_reg.resources is not defined) or (secret_reg.resources | length == 0)
-    k8s:
-      force: false
-      definition:
-        apiVersion: v1
+    - name: read secret
+      k8s_facts:
+        api_version: v1
         kind: Secret
-        metadata:
-          name: "mysql-user-{{ meta.name }}"
-          namespace: "{{ meta.namespace }}"
-        data:
-          password: "{{ lookup('password', '/dev/null chars=ascii_letters,digits') | b64encode }}"
+        name: "mysql-user-{{ meta.name }}"
+        namespace: "{{ meta.namespace }}"
+      register: secret_reg
 
-  - name: read secret
-    k8s_facts:
-      api_version: v1
-      kind: Secret
-      name: "mysql-user-{{ meta.name }}"
-      namespace: "{{ meta.namespace }}"
-    register: secret_reg
+    - name: generate secret if required
+      when: (secret_reg.resources is not defined) or (secret_reg.resources | length == 0)
+      k8s:
+        force: false
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: "mysql-user-{{ meta.name }}"
+            namespace: "{{ meta.namespace }}"
+          data:
+            password: "{{ lookup('password', '/dev/null chars=ascii_letters,digits') | b64encode }}"
 
-  - set_fact:
-      password: "{{ (secret_reg.resources | first).data.password | b64decode }}"
+    - name: read secret
+      k8s_facts:
+        api_version: v1
+        kind: Secret
+        name: "mysql-user-{{ meta.name }}"
+        namespace: "{{ meta.namespace }}"
+      register: secret_reg
 
-  - name: set status
-    k8s_status:
-      api_version: mysql.operator.luktom.net/v1
-      kind: MysqlUser
-      name: "{{ meta.name }}"
-      namespace: "{{ meta.namespace }}"
-      status:
-        stage: "creating user"
+    - set_fact:
+        password: "{{ (secret_reg.resources | first).data.password | b64decode }}"
 
-  - name: create user
-    mysql_user:
-      login_host: "{{ cluster.spec.host }}"
-      login_user: "{{ cluster.spec.username }}"
-      login_password: "{{ cluster_secret.data.password | b64decode }}"
-      name: "{{ meta.name }}"
-      update_password: "{{ update_password | default('on_create') }}"
-      password: "{{ password }}"
-      host: "{{ host | default('%') }}"
-      append_privs: "{{ append_privs | default('yes') }}"
-      priv:  "{{ privileges }}"
+    - name: set status
+      k8s_status:
+        api_version: mysql.operator.luktom.net/v1
+        kind: MysqlUser
+        name: "{{ meta.name }}"
+        namespace: "{{ meta.namespace }}"
+        status:
+          stage: "creating user"
 
-  - name: set status
-    k8s_status:
-      api_version: mysql.operator.luktom.net/v1
-      kind: MysqlUser
-      name: "{{ meta.name }}"
-      namespace: "{{ meta.namespace }}"
-      status:
-        created: true
-        stage: "created"
-    when: state == "present"
+    - name: create user
+      mysql_user:
+        login_host: "{{ cluster.spec.host }}"
+        login_user: "{{ cluster.spec.username }}"
+        login_password: "{{ cluster_secret.data.password | b64decode }}"
+        name: "{{ meta.name }}"
+        update_password: "{{ update_password | default('on_create') }}"
+        password: "{{ password }}"
+        host: "{{ host | default('%') }}"
+        append_privs: "{{ append_privs | default('yes') }}"
+        priv:  "{{ privileges }}"
 
-  - name: delete user
-    mysql_user:
-      login_host: "{{ cluster.spec.host }}"
-      login_user: "{{ cluster.spec.username }}"
-      login_password: "{{ cluster_secret.data.password | b64decode }}"
-      name: "{{ meta.name }}"
-      host: "{{ host | default('%') }}"
-      state: absent
-    when: state == "absent" and drop_on_delete
+    - name: set status
+      k8s_status:
+        api_version: mysql.operator.luktom.net/v1
+        kind: MysqlUser
+        name: "{{ meta.name }}"
+        namespace: "{{ meta.namespace }}"
+        status:
+          created: true
+          stage: "created"
+
+  - when: state == "absent"
+    block:
+    - name: set status
+      k8s_status:
+        api_version: mysql.operator.luktom.net/v1
+        kind: MysqlUser
+        name: "{{ meta.name }}"
+        namespace: "{{ meta.namespace }}"
+        status:
+          stage: "deleting"
+
+    - name: delete user
+      mysql_user:
+        login_host: "{{ cluster.spec.host }}"
+        login_user: "{{ cluster.spec.username }}"
+        login_password: "{{ cluster_secret.data.password | b64decode }}"
+        name: "{{ meta.name }}"
+        host: "{{ host | default('%') }}"
+        state: absent
