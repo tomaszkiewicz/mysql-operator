@@ -4,6 +4,7 @@ metadata:
   name: mysql-operator
 spec:
   replicas: 1
+  revisionHistoryLimit: 5
   selector:
     matchLabels:
       name: mysql-operator
@@ -24,9 +25,9 @@ spec:
           - mountPath: /tmp/ansible-operator/runner
             name: runner
             readOnly: true
-          env:
-          - name: ANSIBLE_VERBOSITY
-            value: "4"
+          # env:
+          # - name: ANSIBLE_VERBOSITY
+          #   value: "4"
           resources:
             requests:
               memory: 256Mi
@@ -47,8 +48,8 @@ spec:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
               value: "mysql-operator"
-            - name: ANSIBLE_VERBOSITY
-              value: "4"
+            # - name: ANSIBLE_VERBOSITY
+            #   value: "4"
           resources:
             requests:
               memory: 256Mi
