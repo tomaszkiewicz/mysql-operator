@@ -52,9 +52,9 @@ spec:
             #   value: "4"
           resources:
             requests:
-              memory: 350Mi
+              memory: 400Mi
             limits:
-              memory: 350Mi
+              memory: 400Mi
       volumes:
         - name: runner
           emptyDir: {}
