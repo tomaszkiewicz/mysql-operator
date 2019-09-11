@@ -84,3 +84,13 @@ This way, you can use a secret directly in your deployment, like that:
         name: "mysql-user-example-mysqluser"
 ...
 ```
+
+Keep in mind that `MysqlUser` and `MysqlDatabase` are namespace-scoped CRD, `MysqlCluster` is cluster-scoped, so you can refer to it from any namespace.
+
+## Installation
+
+```
+git clone https://github.com/tomaszkiewicz/mysql-operator
+cd mysql-operator/deploy
+kustomize build | kubectl apply -f -
+```
