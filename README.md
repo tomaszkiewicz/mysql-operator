@@ -7,7 +7,7 @@ Manage your Mysql databases and users in the whole new way and deploy them along
 I manage multiple Wordpress websites and it was always an additional work to manage Mysql databases for them.
 Of course I automated management using Ansible playbooks, but nevertheless instead of deploying just Kubernetes resources from the template I had to edit inventory file, run playbook to provision databases and users and then get the password and put it in Kubernetes secret. A lot of boring work.
 
-## How it works?
+## How it works
 
 This operator provides Custom Resource Definitions that allow you to manage databases and users for Mysql clusters.
 
