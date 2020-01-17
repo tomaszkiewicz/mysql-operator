@@ -13,7 +13,7 @@ This operator provides Custom Resource Definitions that allow you to manage data
 
 First, we need to define a cluster (with secret for string password) - the cluster tells mysql-operator how to connect to Mysql host for management of databases and users:
 
-```
+```yaml
 apiVersion: mysql.operator.luktom.net/v1
 kind: MysqlCluster
 metadata:
@@ -38,7 +38,7 @@ Keep in mind that the user specified above has to have permissions to create/dro
 
 Next, we can provision a database:
 
-```
+```yaml
 apiVersion: mysql.operator.luktom.net/v1
 kind: MysqlDatabase
 metadata:
@@ -57,7 +57,7 @@ After creating above object in Kubernetes you should see the database provsioned
 
 The same principles apply to the user:
 
-```
+```yaml
 apiVersion: mysql.operator.luktom.net/v1
 kind: MysqlUser
 metadata:
@@ -75,7 +75,7 @@ As you can see, there's no way to specify a password for the user. This is becau
 
 This way, you can use a secret directly in your deployment, like that:
 
-```
+```yaml
 ...
 - name: MYSQL_PASSWORD
   valueFrom:
